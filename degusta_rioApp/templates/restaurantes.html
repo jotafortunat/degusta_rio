@@ -1,0 +1,872 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Degusta Rio - Restaurantes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="icon" href="{% static 'images/icone.jpg' %}" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      background-color: #400913;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: white;
+    }
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card img {
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      object-fit: cover;
+      height: 200px;
+    }
+    .star-yellow {
+     color: #FFD700 !important;
+    }
+    .search-container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .no-results {
+      text-align: center;
+      padding: 50px;
+      color: #666;
+    }
+
+        .star-rating {
+        color: #ddd;
+        font-size: 1.25rem;
+    }
+    .star-yellow {
+        color: #ffc107;
+    }
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+    .star-rating label {
+        cursor: pointer;
+        padding: 0 3px;
+    }
+    .star-rating input[type="radio"]:checked ~ label {
+        color: #ffc107;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffc107;
+    }
+    .comentarios-container {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .avaliacao-form {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+        /* Adicione ao seu CSS existente */
+    .delete-btn {
+        padding: 0.15rem 0.3rem;
+        font-size: 0.75rem;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+    .comment-card {
+        position: relative;
+    }
+
+        .confirmation-box {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 5px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+    
+    .toggle-confirm {
+        transition: all 0.3s ease;
+    }
+    
+    .toggle-confirm:hover {
+        transform: scale(1.1);
+    }
+
+        /* Estilos para a notificação */
+    #notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        min-width: 300px;
+        max-width: 90%;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .notification-hidden {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    
+    .notification-show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    .notification-content {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    #close-notification {
+        padding: 0.15rem 0.3rem;
+    }
+
+        /* Responsividade */
+    @media (max-width: 768px) {
+        .navbar-brand img {
+            height: 70px !important;
+        }
+        
+        .search-container {
+            max-width: 100%;
+            margin: 10px 0;
+        }
+        
+        .card {
+            margin-bottom: 20px;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .star-rating {
+            font-size: 1rem;
+        }
+        
+        .comentarios-container {
+            max-height: 150px;
+        }
+        
+        .avaliacao-form {
+            padding: 8px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .row-cols-md-3 {
+            grid-template-columns: repeat(1, 1fr) !important;
+        }
+        
+        .navbar-custom {
+            flex-wrap: wrap;
+            padding: 5px 0;
+        }
+        
+        .dropdown {
+            margin-top: 10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+    .card-body {
+        padding: 10px;
+    }
+    .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+    /* Garante que cada formulário de avaliação é independente */
+    .avaliacao-form {
+        position: relative;
+    }
+    
+    /* Estilo para as estrelas */
+    .star-rating {
+        display: inline-block;
+        font-size: 1.5rem;
+    }
+    
+    .star-rating label {
+        cursor: pointer;
+        padding: 0 3px;
+    }
+    
+    .star-rating input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .bi-star-fill {
+        color: #ffc107;
+    }
+    
+    .bi-star {
+        color: #ddd;
+    }
+
+
+
+
+    :root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --economico-color: #4cc9f0;
+    --moderado-color: #f8961e;
+    --caro-color: #f72585;
+    --text-dark: #2b2d42;
+    --text-light: #8d99ae;
+    --bg-light: #f8f9fa;
+}
+
+.filter-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.filter-btn {
+    position: relative;
+    padding: 12px 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.filter-btn span {
+    position: relative;
+    z-index: 2;
+}
+
+.filter-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50px;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+}
+
+.filter-btn.active {
+    color: white;
+}
+
+.filter-btn.active .filter-indicator {
+    transform: scaleY(1);
+}
+
+.filter-btn:hover:not(.active) {
+    color: var(--primary-color);
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.card-badge.economico {
+    background-color: var(--economico-color);
+}
+
+.card-badge.moderado {
+    background-color: var(--moderado-color);
+}
+
+.card-badge.caro {
+    background-color: var(--caro-color);
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-content h3 {
+    margin: 0 0 10px;
+    color: var(--text-dark);
+}
+
+.card-content p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+    /* Efeito hover moderno */
+    .filter-btn {
+        transition: all 0.2s ease;
+        border-width: 2px;
+    }
+    
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .filter-btn.active {
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    /* Estilo ativo específico para cada botão */
+    .filter-btn[data-filter="all"].active {
+        background-color: rgba(13, 110, 253, 0.2) !important;
+        border-color: #0d6efd !important;
+        color: #0d6efd;
+    }
+    
+    .filter-btn[data-filter="economico"].active {
+        background-color: rgba(40, 167, 69, 0.2) !important;
+        border-color: #28a745 !important;
+        color: #28a745;
+    }
+    
+    .filter-btn[data-filter="moderado"].active {
+        background-color: rgba(255, 193, 7, 0.2) !important;
+        border-color: #ffc107 !important;
+        color: #ffc107;
+    }
+    
+    .filter-btn[data-filter="caro"].active {
+        background-color: rgba(220, 53, 69, 0.2) !important;
+        border-color: #dc3545 !important;
+        color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-custom py-0" style="max-height: 70px;">
+    <div class="container d-flex justify-content-between align-items-center w-100">
+      
+    <a class="navbar-brand" href="{% url 'pagina_restaurantes' %}"> <!-- Recarrega a página -->
+      <img 
+        src="{% static 'images/logo_degusta.png' %}" 
+        alt="Degusta Rio" 
+        height="100" 
+        style="object-fit: contain;" 
+      />
+    </a>
+
+    <!-- Barra de Pesquisa -->
+    <div class="search-container mt-2 mt-lg-0">
+      <form id="searchForm" class="d-flex" method="get" action="{% url 'pagina_restaurantes' %}">
+        <div class="input-group">
+          <input 
+            type="search" 
+            class="form-control form-control-sm" 
+            placeholder="Pesquisar restaurantes..." 
+            name="q"
+            id="searchInput"
+            aria-label="Pesquisar"
+            value="{{ request.GET.q }}"
+          >
+          <button class="btn btn-outline-light btn-sm" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+          {% if request.GET.q %}
+          <button class="btn btn-outline-light btn-sm" type="button" onclick="clearSearch()">
+            <i class="bi bi-x"></i>
+          </button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+
+    {% if usuario_logado %}
+    <div class="dropdown mt-2 mt-lg-0">
+      <button class="btn btn-outline-light btn-sm dropdown-toggle text-white" type="button" id="menuUsuario" data-bs-toggle="dropdown" aria-expanded="false">
+        Menu
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuUsuario">
+        <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+        <li>
+          <form method="post" action="{% url 'logout' %}" class="dropdown-item m-0 p-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link dropdown-item text-danger">Sair</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="text-center mt-4">
+  {% if request.session.usuario_id %}
+    <a href="{% url 'adicionar_restaurante' %}" class="btn btn-primary">Adicionar Restaurante</a>
+  {% else %}
+    <p><a href="{% url 'login' %}" class="btn btn-outline-secondary">Faça login</a> para adicionar restaurantes.</p>
+  {% endif %}
+</div>
+
+
+
+
+
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Restaurantes</h1>
+
+
+<div class="mb-4">
+    <div class="d-flex flex-wrap gap-2">
+        <!-- Filtro Todos -->
+        <button type="button" 
+                class="btn btn-sm px-3 py-2 filter-btn active" 
+                data-filter="all"
+                style="border-radius: 20px;">
+            <span class="d-inline d-md-none">🌎</span>
+            <span class="d-none d-md-inline">Todos</span>
+        </button>
+        
+        <!-- Filtro Econômico -->
+        <button type="button" 
+                class="btn btn-sm px-3 py-2 filter-btn" 
+                data-filter="economico"
+                style="border-radius: 20px; background-color: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.3);">
+            <span class="d-inline d-md-none">$</span>
+            <span class="d-none d-md-inline">Econômico</span>
+        </button>
+        
+        <!-- Filtro Moderado -->
+        <button type="button" 
+                class="btn btn-sm px-3 py-2 filter-btn" 
+                data-filter="moderado"
+                style="border-radius: 20px; background-color: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);">
+            <span class="d-inline d-md-none">$$</span>
+            <span class="d-none d-md-inline">Moderado</span>
+        </button>
+        
+        <!-- Filtro Caro -->
+        <button type="button" 
+                class="btn btn-sm px-3 py-2 filter-btn" 
+                data-filter="caro"
+                style="border-radius: 20px; background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.3);">
+            <span class="d-inline d-md-none">$$$</span>
+            <span class="d-none d-md-inline">Caro</span>
+        </button>
+    </div>
+</div>
+
+    {% if request.GET.q %}
+    <div class="alert alert-info mb-4">
+        Resultados para: <strong>"{{ request.GET.q }}"</strong>
+        <a href="{% url 'pagina_restaurantes' %}" class="float-end">Limpar busca</a>
+    </div>
+    {% endif %}
+
+<div class="row row-cols-1 row-cols-md-3 g-4" id="restaurantsContainer">
+    {% if restaurantes %}
+        {% for restaurante in restaurantes %}
+        <div class="col">
+          <div class="card h-100">
+            {% if restaurante.foto %}
+              <img src="{{ restaurante.foto.url }}" class="card-img-top" alt="Foto de {{ restaurante.nome }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+              <img src="https://via.placeholder.com/400x200?text=Sem+foto" class="card-img-top" alt="Sem foto disponível" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ restaurante.nome }}</h5>
+              <p class="card-text">{{ restaurante.descricao|truncatechars:100 }}</p>
+              <p class="card-text">
+                <small class="text-muted">
+                  <i class="bi bi-geo-alt"></i> {{ restaurante.endereco }}
+                </small>
+              </p>
+
+              <p class="card-text">
+              <i class="bi bi-cash"></i> 
+              {{ restaurante.get_preco_display }}
+              </p>
+              
+              
+              <p class="card-text">
+                <small class="text-muted">
+                  <i class="bi bi-person"></i> Criado por: {{ restaurante.criado_por.nome }}
+                </small>
+              </p>
+      
+<!-- Avaliação Média -->
+<div class="star-rating mb-2">
+  {% with media=restaurante.media_avaliacoes|default:0 %}
+    {% for i in "12345" %}
+      {% if forloop.counter <= media %}
+        <i class="bi bi-star-fill star-yellow"></i>
+      {% else %}
+        <i class="bi bi-star"></i>
+      {% endif %}
+    {% endfor %}
+    <span class="ms-2">
+      {{ media|floatformat:1 }} 
+      ({{ restaurante.total_avaliacoes }} avaliação{{ restaurante.total_avaliacoes|pluralize }})
+    </span>
+  {% endwith %}
+</div>
+              
+              <!-- Comentários Recentes -->
+              <div class="comentarios-container mt-3 border-top pt-2">
+                <h6><i class="bi bi-chat-left-text"></i> Comentários:</h6>
+                {% for avaliacao in restaurante.avaliacoes.all|slice:":2" %}
+                  <div class="card mb-2">
+    <div class="card-body p-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <strong>{{ avaliacao.usuario.nome }}</strong>
+            <div>
+                <span class="badge bg-warning text-dark me-2">
+                    {{ avaliacao.estrelas }} <i class="bi bi-star-fill"></i>
+                </span>
+                {% if usuario_logado and avaliacao.usuario.id_user == request.session.usuario_id %}
+                <!-- Botão para mostrar a confirmação -->
+                <button class="btn btn-sm btn-outline-danger toggle-confirm" 
+                        data-target="confirm-{{ avaliacao.id }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+                
+                <!-- Div de confirmação (inicialmente escondida) -->
+                <div id="confirm-{{ avaliacao.id }}" class="confirmation-box d-none">
+                    <span class="small me-2">Apagar?</span>
+                    <form method="post" action="{% url 'deletar_avaliacao' avaliacao.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Sim
+                        </button>
+                    </form>
+                    <button class="btn btn-sm btn-outline-secondary cancel-delete ms-1"
+                            data-target="confirm-{{ avaliacao.id }}">
+                        Não
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+                      {% if avaliacao.comentario %}
+                        <p class="mb-1 mt-2 small">{{ avaliacao.comentario|truncatechars:60 }}</p>
+                      {% endif %}
+                      <small class="text-muted">{{ avaliacao.data_criacao|date:"d/m/Y" }}</small>
+                    </div>
+                  </div>
+                {% empty %}
+                  <p class="small text-muted">Nenhum comentário ainda.</p>
+                {% endfor %}
+              </div>
+              
+{% if usuario_logado %}
+<div class="avaliacao-form mt-3 border-top pt-3">
+    <form method="post" action="{% url 'adicionar_avaliacao' restaurante.id_restaurante %}" 
+          id="form-avaliacao-{{ restaurante.id_restaurante }}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Sua avaliação:</label>
+            <div class="star-rating" id="rating-{{ restaurante.id_restaurante }}">
+                {% for i in "12345" %}
+                    <input type="radio" 
+                           id="star{{i}}-{{restaurante.id_restaurante}}" 
+                           name="estrelas" 
+                           value="{{i}}"
+                           {% if restaurante.usuario_avaliou and restaurante.usuario_avaliou.estrelas == i|add:"0" %}checked{% endif %}>
+                    <label for="star{{i}}-{{restaurante.id_restaurante}}">
+                        <i class="bi bi-star{% if restaurante.usuario_avaliou and restaurante.usuario_avaliou.estrelas >= i|add:'0' %}-fill{% endif %}"></i>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="comentario-{{ restaurante.id_restaurante }}" class="form-label">Comentário (opcional):</label>
+            <textarea class="form-control" 
+                     id="comentario-{{ restaurante.id_restaurante }}" 
+                     name="comentario" 
+                     rows="2">{% if restaurante.usuario_avaliou %}{{ restaurante.usuario_avaliou.comentario }}{% endif %}</textarea>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary w-100">
+            {% if restaurante.usuario_avaliou %}Atualizar{% else %}Enviar{% endif %} Avaliação
+        </button>
+    </form>
+</div>
+              {% else %}
+                <div class="text-center mt-3">
+                  <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-box-arrow-in-right"></i> Faça login para avaliar
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="no-results text-center py-5">
+                <i class="bi bi-search" style="font-size: 3rem;"></i>
+                <h3>Nenhum restaurante encontrado</h3>
+                {% if request.GET.q %}
+                <p>Não encontramos resultados para "{{ request.GET.q }}"</p>
+                <a href="{% url 'pagina_restaurantes' %}" class="btn btn-outline-primary mt-2">Ver todos os restaurantes</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Notificação de sucesso -->
+<div id="notification" class="notification-hidden">
+    <div class="notification-content">
+        <span id="notification-message"></span>
+        <button id="close-notification" class="btn btn-sm btn-outline-light ms-3">
+            <i class="bi bi-x"></i>
+        </button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        window.location.href = "{% url 'pagina_restaurantes' %}";
+    }
+
+    // Opcional: Se quiser fazer busca sem recarregar a página (AJAX)
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('searchForm').submit();
+        }
+    });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Configura os eventos de rating para cada restaurante
+    document.querySelectorAll('[id^="rating-"]').forEach(ratingContainer => {
+        const inputs = ratingContainer.querySelectorAll('input[type="radio"]');
+        const labels = ratingContainer.querySelectorAll('label');
+        
+        inputs.forEach(input => {
+            // Inicializa estrelas já selecionadas
+            if (input.checked) {
+                updateStars(input.value, labels);
+            }
+            
+            input.addEventListener('change', function() {
+                updateStars(this.value, labels);
+            });
+        });
+    });
+    
+    function updateStars(value, labels) {
+        labels.forEach(label => {
+            const starValue = label.getAttribute('for').split('-')[0].replace('star', '');
+            const icon = label.querySelector('i');
+            
+            if (starValue <= value) {
+                icon.classList.remove('bi-star');
+                icon.classList.add('bi-star-fill');
+                label.style.color = '#ffc107';
+            } else {
+                icon.classList.remove('bi-star-fill');
+                icon.classList.add('bi-star');
+                label.style.color = '#ddd';
+            }
+        });
+    }
+});
+//aqui
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar/ocultar confirmação
+    document.querySelectorAll('.toggle-confirm').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const confirmBox = document.getElementById(targetId);
+            
+            // Oculta todas as outras confirmações
+            document.querySelectorAll('.confirmation-box').forEach(box => {
+                if (box.id !== targetId) box.classList.add('d-none');
+            });
+            
+            // Alterna a visibilidade da confirmação alvo
+            confirmBox.classList.toggle('d-none');
+        });
+    });
+    
+    // Botão "Não" para cancelar
+    document.querySelectorAll('.cancel-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('d-none');
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const notification = document.getElementById('notification');
+    const messageElement = document.getElementById('notification-message');
+    const closeBtn = document.getElementById('close-notification');
+    
+    // Fechar notificação ao clicar no botão
+    closeBtn.addEventListener('click', function() {
+        hideNotification();
+    });
+    
+    // Verifica se há mensagens do Django para mostrar
+    {% if messages %}
+        {% for message in messages %}
+            showNotification("{{ message }}", "{{ message.tags }}");
+        {% endfor %}
+    {% endif %}
+    
+    // Função para mostrar notificação
+    function showNotification(message, type = 'success') {
+        // Define a cor baseada no tipo
+        const colors = {
+            'success': '#28a745',
+            'error': '#dc3545',
+            'warning': '#ffc107',
+            'info': '#17a2b8'
+        };
+        
+        notification.style.backgroundColor = colors[type] || colors['success'];
+        messageElement.textContent = message;
+        
+        // Mostra a notificação
+        notification.classList.remove('notification-hidden');
+        notification.classList.add('notification-show');
+        
+        // Esconde automaticamente após 5 segundos
+        setTimeout(hideNotification, 5000);
+    }
+    
+    // Função para esconder notificação
+    function hideNotification() {
+        notification.classList.remove('notification-show');
+        notification.classList.add('notification-hidden');
+    }
+    
+    // Opcional: Exemplo de como chamar via JavaScript
+    // window.showNotification = showNotification;
+});
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const restaurantCards = document.querySelectorAll('#restaurantsContainer .col');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('btn-outline-primary', 'btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+            });
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            this.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-warning', 'btn-outline-danger');
+            
+            // Set solid color based on filter
+            if(this.dataset.filter === 'economico') {
+                this.classList.add('btn-success');
+            } else if(this.dataset.filter === 'moderado') {
+                this.classList.add('btn-warning');
+            } else if(this.dataset.filter === 'caro') {
+                this.classList.add('btn-danger');
+            } else {
+                this.classList.add('btn-primary');
+            }
+            
+            const filterValue = this.dataset.filter;
+            
+            // Filter cards
+            restaurantCards.forEach(card => {
+                const priceText = card.querySelector('.bi-cash').nextSibling.textContent.trim().toLowerCase();
+                let priceCategory = '';
+                
+                if(priceText.includes('econômico')) {
+                    priceCategory = 'economico';
+                } else if(priceText.includes('moderado')) {
+                    priceCategory = 'moderado';
+                } else if(priceText.includes('caro')) {
+                    priceCategory = 'caro';
+                }
+                
+                if(filterValue === 'all' || priceCategory === filterValue) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>

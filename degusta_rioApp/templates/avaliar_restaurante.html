@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        {% if avaliacao_existente %}
+                            Editar Avaliação - {{ restaurante.nome }}
+                        {% else %}
+                            Nova Avaliação - {{ restaurante.nome }}
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4 text-center">
+                            <label class="form-label d-block mb-3">Sua avaliação:</label>
+                            <div class="star-rating-large">
+                                {% for i in "54321" %}
+                                    <input type="radio" id="star{{ i }}" name="estrelas" value="{{ i }}" 
+                                           {% if form.estrelas.value == i|add:"0" %}checked{% endif %}>
+                                    <label for="star{{ i }}"><i class="bi bi-star-fill fs-1"></i></label>
+                                {% endfor %}
+                            </div>
+                            {% if form.estrelas.errors %}
+                                <div class="text-danger mt-2">{{ form.estrelas.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_comentario" class="form-label">Comentário (opcional):</label>
+                            <textarea class="form-control" id="id_comentario" name="comentario" 
+                                      rows="4" placeholder="Conte sua experiência...">{{ form.comentario.value|default:'' }}</textarea>
+                            {% if form.comentario.errors %}
+                                <div class="text-danger mt-2">{{ form.comentario.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'pagina_restaurantes' %}" class="btn btn-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if avaliacao_existente %}Atualizar{% else %}Enviar{% endif %} Avaliação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .star-rating-large {
+        color: #ddd;
+        font-size: 2.5rem;
+    }
+    .star-rating-large input[type="radio"] {
+        display: none;
+    }
+    .star-rating-large label {
+        cursor: pointer;
+        padding: 0 5px;
+    }
+    .star-rating-large input[type="radio"]:checked ~ label {
+        color: #ffc107;
+    }
+    .star-rating-large label:hover,
+    .star-rating-large label:hover ~ label {
+        color: #ffc107;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ativa a seleção de estrelas
+    const stars = document.querySelectorAll('.star-rating-large input');
+    stars.forEach(star => {
+        star.addEventListener('change', function() {
+            const rating = this.value;
+            stars.forEach(s => {
+                const label = document.querySelector(`label[for="${s.id}"]`);
+                if (s.value <= rating) {
+                    label.innerHTML = '<i class="bi bi-star-fill fs-1"></i>';
+                    label.style.color = '#ffc107';
+                } else {
+                    label.innerHTML = '<i class="bi bi-star fs-1"></i>';
+                    label.style.color = '#ddd';
+                }
+            });
+        });
+        
+        // Dispara o evento change para estrelas já selecionadas
+        if (star.checked) {
+            star.dispatchEvent(new Event('change'));
+        }
+    });
+});
+</script>
+{% endblock %}

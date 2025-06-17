@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Degusta Rio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar-custom {
+      background-color: #400913;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 60px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+    }
+    .form-label {
+      font-weight: 600;
+      color: #400913;
+    }
+    .btn-login {
+      background-color: #400913;
+      color: white;
+      font-weight: 600;
+    }
+    .btn-login:hover {
+      background-color: #5a0f22;
+      color: white;
+    }
+    .messages {
+      margin-top: 15px;
+    }
+    .messages li {
+      color: #b02a37; /* vermelho suave para erro */
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom py-0" style="max-height: 70px;"> <!-- Ajuste o max-height conforme necessário -->
+  <div class="container d-flex justify-content-between align-items-center w-100">
+    <a class="navbar-brand" href="{% url 'pagina_restaurantes' %}"> <!-- Recarrega a página -->
+      <img 
+        src="{% static 'images/logo_degusta.png' %}" 
+        alt="Degusta Rio" 
+        height="100" 
+        style="object-fit: contain;" 
+      />
+    </a>
+  </div>
+</nav>
+
+  <!-- Formulário Login -->
+  <div class="form-container shadow-sm">
+    <h3 class="mb-4 text-center" style="color:#400913;">Acessar conta</h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="seu@email.com"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="senha" class="form-label">Senha</label>
+        <input
+          type="password"
+          class="form-control"
+          id="senha"
+          name="senha"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-login w-100">Entrar</button>
+    </form>
+  </br>
+<div class="text-center"> <!-- Centraliza tudo dentro da div -->
+    <button 
+        type="button" 
+        class="btn btn-login w-50 mx-auto d-block" 
+        onclick="window.location.href='/cadastro'"
+    >
+        Cadastrar-se
+    </button>
+</div>
+
+    {% if messages %}
+      <ul class="messages list-unstyled mt-3">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

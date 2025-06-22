@@ -602,7 +602,7 @@
             {% endif %}
             <div class="card-body">
               <h5 class="card-title">{{ restaurante.nome }}</h5>
-              <p class="card-text">{{ restaurante.descricao|truncatechars:100 }}</p>
+              <p class="card-text">{{ restaurante.descricao|truncatechars:5000 }}</p>
               <p class="card-text">
                 <small class="text-muted">
                   <i class="bi bi-geo-alt"></i> {{ restaurante.endereco }}
@@ -675,7 +675,7 @@
             </div>
         </div>
                       {% if avaliacao.comentario %}
-                        <p class="mb-1 mt-2 small">{{ avaliacao.comentario|truncatechars:60 }}</p>
+                        <p class="mb-1 mt-2 small">{{ avaliacao.comentario|truncatechars:500 }}</p>
                       {% endif %}
                       <small class="text-muted">{{ avaliacao.data_criacao|date:"d/m/Y" }}</small>
                     </div>

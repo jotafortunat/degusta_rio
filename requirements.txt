@@ -47,7 +47,6 @@ pillow==10.4.0
 platformdirs==4.3.7
 propcache==0.3.1
 psutil==7.0.0
-psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pycep-correios==5.2.0
 pycparser==2.22

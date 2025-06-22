@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-q-+lw5ys(tl48qzu$1i%wfq91d%ah(!@8-v1@3=c7g&6q3zrg7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['degusta-rio.onrender.com', '127.0.0.1']
 

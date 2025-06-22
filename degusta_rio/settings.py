@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-q-+lw5ys(tl48qzu$1i%wfq91d%ah(!@8-v1@3=c7g&6q3zrg7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['degusta-rio.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['degusta-rio.onrender.com', '127.0.0.1', 'degustario.blog.br', 'www.degustario.blog.br', '31.97.173.128']
 
 
 # Application definition

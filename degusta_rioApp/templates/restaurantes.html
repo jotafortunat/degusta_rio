@@ -403,64 +403,128 @@
         border-color: #dc3545 !important;
         color: #dc3545;
     }
+
+    /* Adicione isso ao seu bloco de estilo existente */
+.navbar-custom {
+    padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+    .navbar-custom {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px;
+        max-height: none !important;
+    }
+    
+    .navbar-brand {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .navbar-brand img {
+        height: 60px !important;
+        margin: 0 auto;
+    }
+    
+    .search-container {
+        order: 2;
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .dropdown {
+        order: 3;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .input-group {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand img {
+        height: 50px !important;
+    }
+    
+    .filter-buttons {
+        justify-content: flex-start;
+    }
+    
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
   </style>
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-custom py-0" style="max-height: 70px;">
-    <div class="container d-flex justify-content-between align-items-center w-100">
-      
-    <a class="navbar-brand" href="{% url 'pagina_restaurantes' %}"> <!-- Recarrega a página -->
-      <img 
-        src="{% static 'images/logo_degusta.png' %}" 
-        alt="Degusta Rio" 
-        height="100" 
-        style="object-fit: contain;" 
-      />
-    </a>
+<nav class="navbar navbar-expand-lg navbar-custom py-0">
+    <div class="container-fluid">
+        <!-- Logo - sempre visível -->
+        <a class="navbar-brand" href="{% url 'pagina_restaurantes' %}">
+            <img 
+                src="{% static 'images/logo_degusta.png' %}" 
+                alt="Degusta Rio" 
+                height="100" 
+                style="object-fit: contain; max-height: 60px;" 
+            />
+        </a>
+        
+        <!-- Botão para toggle em mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Conteúdo que será colapsado em mobile -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Barra de Pesquisa -->
+            <div class="search-container mx-auto my-2 my-lg-0" style="max-width: 500px;">
+                <form id="searchForm" class="d-flex" method="get" action="{% url 'pagina_restaurantes' %}">
+                    <div class="input-group">
+                        <input 
+                            type="search" 
+                            class="form-control form-control-sm" 
+                            placeholder="Pesquisar restaurantes..." 
+                            name="q"
+                            id="searchInput"
+                            aria-label="Pesquisar"
+                            value="{{ request.GET.q }}"
+                        >
+                        <button class="btn btn-outline-light btn-sm" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        {% if request.GET.q %}
+                        <button class="btn btn-outline-light btn-sm" type="button" onclick="clearSearch()">
+                            <i class="bi bi-x"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
 
-    <!-- Barra de Pesquisa -->
-    <div class="search-container mt-2 mt-lg-0">
-      <form id="searchForm" class="d-flex" method="get" action="{% url 'pagina_restaurantes' %}">
-        <div class="input-group">
-          <input 
-            type="search" 
-            class="form-control form-control-sm" 
-            placeholder="Pesquisar restaurantes..." 
-            name="q"
-            id="searchInput"
-            aria-label="Pesquisar"
-            value="{{ request.GET.q }}"
-          >
-          <button class="btn btn-outline-light btn-sm" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
-          {% if request.GET.q %}
-          <button class="btn btn-outline-light btn-sm" type="button" onclick="clearSearch()">
-            <i class="bi bi-x"></i>
-          </button>
-          {% endif %}
+            <!-- Menu do Usuário -->
+            {% if usuario_logado %}
+            <div class="dropdown ms-lg-3">
+                <button class="btn btn-outline-light btn-sm dropdown-toggle text-white" type="button" id="menuUsuario" data-bs-toggle="dropdown" aria-expanded="false">
+                    Menu
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuUsuario">
+                    <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" class="dropdown-item m-0 p-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link dropdown-item text-danger">Sair</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
         </div>
-      </form>
     </div>
-
-    {% if usuario_logado %}
-    <div class="dropdown mt-2 mt-lg-0">
-      <button class="btn btn-outline-light btn-sm dropdown-toggle text-white" type="button" id="menuUsuario" data-bs-toggle="dropdown" aria-expanded="false">
-        Menu
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuUsuario">
-        <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
-        <li>
-          <form method="post" action="{% url 'logout' %}" class="dropdown-item m-0 p-0">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-link dropdown-item text-danger">Sair</button>
-          </form>
-        </li>
-      </ul>
-    </div>
-    {% endif %}
-  </div>
 </nav>
 
 <div class="text-center mt-4">

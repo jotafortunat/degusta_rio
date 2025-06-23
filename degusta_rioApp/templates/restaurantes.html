@@ -633,7 +633,7 @@
     {% endfor %}
     <span class="ms-2">
       {{ media|floatformat:1 }} 
-      ({{ restaurante.total_avaliacoes }} avaliação{{ restaurante.total_avaliacoes|pluralize }})
+      ({{ restaurante.total_avaliacoes }} avaliaç{{ restaurante.total_avaliacoes|pluralize:"ão,ões" }})
     </span>
   {% endwith %}
 </div>
